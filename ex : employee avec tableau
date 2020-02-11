@@ -1,0 +1,66 @@
+
+class user {
+
+}
+
+constructor (name) (
+ this.name = name || "user"
+}
+}
+
+class employee extends user {
+
+  constructor(FirstName, LastName, email, numTel, age){
+    super()
+    this.FirstName: firstName;
+    this.LastName: lastName;
+    this.email: email;
+    this.numTel: numeTel;
+    this.age; age;
+  }
+}
+
+class Employee extends user {
+
+  constructor(firstName, lastName, email, numTel, age){
+    super(firstName, lastName, email, numTel, age)
+    this.jobTitle = jobTitle;
+    this.salary = salary;
+}
+
+static medSalary(employee) {
+  return mediane = employee.map(employee => employee.salary));
+}
+
+static totalSalary(employees) {
+  let sum = employee
+}
+
+let valeur = [1,2,3,4];
+valeurs reduce ((acc,cur)=>{acc + cur,0)/valeur.length;
+}
+
+employee.map(e=> e.salary).filter(5=> 5000);
+
+[1,2,3,4,5].fitter(v=>v%2=0);
+
+
+var tableau = []
+cosole.log(tableau[0])
+tableau.shift()
+console.log(tableau[1000])
+
+var languagesProg = []
+
+while(true) {
+  var promptText = prompt ('Entrez le nombre d'employees');
+  if (promptText != '') {
+    languagesProg.push(promptText);
+  } else {
+}
+}
+console.log(languageProg);
+
+static medAge(employee) {
+  let sum = employee
+}
