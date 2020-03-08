@@ -1,0 +1,17 @@
+const fiboReduceExplained = level => {
+    // on force le rang minimum à 1 en utilisant Math.max
+    // on ajoute 1 pour bien calculer jusqu'au rang souhaité
+    // on créé un tableau vide qui a pour longueur le rang souhaité
+    let array = new Array(Math.max(1, ++level));
+    array.fill(0); // on le blinde de 0 jusqu'au bout
+    let startValue = [0]; // valeur de départ
+    if(level > 1) startValue.push(1); // cas particulier pour fibo(0)
+    let fibo = array.reduce((acc, val, index) => { // reduce !
+        if(index > 1) { // index strictement supérieur à un, on est sorti des valeurs de départ
+            let next = acc[index - 1] + acc[index - 2]; // on calcule le terme suivant 
+            acc.push(next); // et on l'ajoute au tableau
+        }
+        return acc; // on retourne le tableau pour la boucle suivante
+    }, startValue); // valeur de départ du reduce
+    return fibo; // on retourne le résultat
+}
