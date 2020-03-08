@@ -1,0 +1,14 @@
+/**
+ * @method testPileOuFace
+ * @param {number} amount 
+ */
+const testPileOuFace = amount => {
+	let result = {pile: 0, face: 0};
+	for(let i = 0; i < amount; i++) result[pileOuFace()]++;
+	return result;
+};
+
+/**
+ * @method pileOuFace : generate random coin toss
+ */
+const pileOuFace = () => Math.random() > 0.5 ? "face" : "pile";
