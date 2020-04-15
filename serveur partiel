@@ -1,0 +1,239 @@
+const http = require("http");
+
+console.log("start http server");
+
+const randRange = (min, max) => {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const randStr = () => {
+	return Math.random().toString(36).substr(2);
+}
+
+let questions = [
+	{
+		question: "Quel est le mot-clé permettant de spécifier l’objet dont hérite une classe ES6 lors de sa déclaration ?",
+		answers : ["implements", "super", "extends", "inherits"],
+		correct: 2
+	},
+	
+	{
+		question: "Lequel de ces algorithmes ne concerne pas la sécurité informatique ?",
+		answers : ["RSA", "AES", "BASE64", "SHA"],
+		correct: 3
+	}
+	
+];
+
+questions = questions.map((question, index) => ({id: index, ...question}));
+
+const students = [
+	12345,
+	6789
+];
+
+const stats = new Map();
+
+const answers = new Map();
+
+const mapping = new Map();
+
+const sujets = new Map();
+
+const current = new Map();
+
+/*
+
+{
+	n°etud1 : {
+		question1 n° : answer n°,
+		question2 n° : answer n°
+	},
+	n°etud2 : {
+
+	}
+	...
+}
+
+*/
+
+const generateLoginPage = (req, res, url) => {
+
+	// textfield
+	// n° étudiant
+
+	res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+	res.writeHead(200);
+	res.end("<html><head></head><body><input type=\"text\"/></body>");
+
+}
+
+const shuffle = array => { // fisher-yates algorithm
+	let counter = array.length;
+	while(counter > 0) {
+		let index = Math.floor(Math.random() * counter); // random index
+		counter--;
+		let temp = array[counter]; // swap
+		array[counter] = array[index];
+		array[index] = temp;
+	}
+	return array;
+}
+
+const studentLogin = (req, res, url) => {
+	// check student exists
+	let student = parseInt(url[0]);
+	if(students.indexOf(student) !== -1) {
+		if(answers.has(student)) {
+			if(!stats.get(student).has("fail")) stats.get(student).set("fail", 0);
+			let fails = stats.get(student).get("fail");
+			stats.get(student).set("fail", ++fails);
+			console.log(stats.get(student).get("fail"));
+			res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+			res.writeHead(200);
+			res.end("<html><head></head><body>two times ?</body>");
+			return;
+		}
+		let randomId = randStr();
+		stats.set(student, new Map());
+		stats.get(student).set("login", Date.now());
+		answers.set(student, new Map());
+		answers.get(student).set(0, 0);
+		mapping.set(randomId, student);
+		current.set(student, 0);
+		sujets.set(student, shuffle(questions.slice()));
+		res.setHeader('Content-Type', 'text/html; charset=UTF-8');
+		res.writeHead(200);
+		res.end("<html><head></head><body>" + randomId + "</body>");
+	}
+	else {
+		res.setHeader('Content-Type', 'text/plain');
+		res.writeHead(401);
+		res.end("no !");
+	}
+}
+
+const generateQuestionPage = (req, res, url) => {
+
+	let randomId = url[0];
+
+	if(mapping.has(randomId)) {
+		let student = mapping.get(randomId);
+		
+		let studentCurrent = current.get(student);
+		if(!answers.get(student).has(studentCurrent)) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(200);
+			res.end("answer first");
+			return;
+		}
+
+		let studentQuestions = sujets.get(student);
+		if(studentQuestions.length === 0) {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(200);
+			res.end("fini");
+			return;
+		}
+
+		let randomIndex = randRange(0, studentQuestions.length - 1);
+		let question = studentQuestions[randomIndex];
+		current.set(student, question.id);
+		studentQuestions.splice(randomIndex, 1);
+
+		// timeout keep date
+		// question[timeout] = new Date();
+
+		res.setHeader('Content-Type', 'text/plain');
+		res.writeHead(200);
+		res.end(question.question);
+	}
+	
+	// display question text
+	// loop answers
+		// display checkbox answer text
+
+	// html global
+
+	// send to response
+
+}
+
+const questionAnswer = (req, res, url) => {
+	let randomId = url[0],
+		answer = url[1];
+
+	if(mapping.has(randomId)) {
+		let student = mapping.get(randomId);
+		console.log("answer", student, answer);
+		let studentCurrent = current.get(student);
+		if(!answers.get(student).has(studentCurrent)) {
+			answers.get(student).set(studentCurrent, answer);
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(200);
+			res.end("ok");
+		}
+		else {
+			res.setHeader('Content-Type', 'text/plain');
+			res.writeHead(200);
+			res.end("already answered");
+		}
+	}
+
+	// go to student n°
+	// assign question number && set answer
+
+}
+
+const server = http.createServer((request, response) => {
+
+	// request = HTTP request from client
+	// response = answer to client
+
+	// user url input
+	let urlPath = request.url.split("/").filter(Boolean);
+
+	/*
+
+	/login
+	/login/{n°}
+
+	/question/{n°etud}
+	/question/{n°etud}/{n°reponse}
+
+	*/
+
+	switch(urlPath.shift()) {
+
+		case "login":
+			if(urlPath.length == 0) {
+				generateLoginPage(request, response, urlPath);
+			}
+			else {
+				studentLogin(request, response, urlPath);
+			}
+			break;
+
+		case "question":
+			if(urlPath.length == 1) {
+				generateQuestionPage(request, response, urlPath);
+			}
+			else if(urlPath.length == 2) {
+				questionAnswer(request, response, urlPath);
+			}
+			break;
+
+		
+
+		default:
+			response.writeHead(404);
+			response.end('not found');
+			break;
+
+	}
+
+	
+
+});
+
+server.listen(80);
